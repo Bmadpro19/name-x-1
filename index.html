@@ -112,16 +112,26 @@
         <!-- TOAST NOTIFICATION POPUP -->
         <div id="postImageViewer" class="hidden fixed inset-0 z-[100] bg-black/95 flex flex-col"
             onclick="closePostImageViewer()">
-            <div class="flex items-center justify-end gap-3 p-4 text-white" onclick="event.stopPropagation()">
-                <a id="post-image-download" href="#" download="post-image"
-                    class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center"
-                    title="Download image" aria-label="Download image"><i class="fa-solid fa-download"></i></a>
-                <button type="button" onclick="closePostImageViewer()"
-                    class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xl"
-                    title="Close" aria-label="Close image"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex items-center justify-between gap-3 p-4 text-white" onclick="event.stopPropagation()">
+                <span id="post-image-viewer-count" class="text-xs font-semibold text-white/80"></span>
+                <div class="flex items-center gap-3">
+                    <a id="post-image-download" href="#" download="post-image"
+                        class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center"
+                        title="Download image" aria-label="Download image"><i class="fa-solid fa-download"></i></a>
+                    <button type="button" onclick="closePostImageViewer()"
+                        class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xl"
+                        title="Close" aria-label="Close image"><i class="fa-solid fa-xmark"></i></button>
+                </div>
             </div>
-            <div class="flex-1 min-h-0 flex items-center justify-center p-3" onclick="event.stopPropagation()">
-                <img id="post-image-viewer-img" src="" alt="Post image" class="max-w-full max-h-full object-contain">
+            <div class="flex-1 min-h-0 flex items-center justify-center gap-2 sm:gap-5 p-3"
+                onclick="event.stopPropagation()">
+                <button id="post-image-prev" type="button" onclick="changePostViewerImage(-1)"
+                    class="hidden shrink-0 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                    aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
+                <img id="post-image-viewer-img" src="" alt="Post image" class="max-w-[82%] max-h-full object-contain">
+                <button id="post-image-next" type="button" onclick="changePostViewerImage(1)"
+                    class="hidden shrink-0 w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                    aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
 
@@ -996,6 +1006,75 @@
             </div>
         </div>
 
+        <!-- SHARE T CONNECTION CONFIRMATION -->
+        <div id="shareTConnectConfirmModal"
+            class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
+            role="dialog" aria-modal="true" aria-labelledby="shareT-connect-title">
+            <div
+                class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 p-5 shadow-2xl border border-slate-100 dark:border-slate-700">
+                <div class="flex items-center gap-3 mb-4">
+                    <div id="shareT-connect-avatar"
+                        class="w-14 h-14 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center overflow-hidden shrink-0 font-black text-lg">
+                        GS</div>
+                    <div class="min-w-0">
+                        <h3 id="shareT-connect-title" class="font-black text-sm">Connect to Share T?</h3>
+                        <p id="shareT-connect-owner" class="text-xs text-slate-500 mt-1 truncate"></p>
+                    </div>
+                </div>
+                <p class="text-xs leading-5 text-slate-600 dark:text-slate-300 mb-4">Are you ready to connect to this
+                    Share T and join the discussion?</p>
+                <div class="rounded-xl bg-orange-50 dark:bg-slate-700/70 p-3 mb-5">
+                    <p id="shareT-connect-room-name" class="font-bold text-xs text-orange-700 dark:text-orange-300"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="cancelShareTConnection()"
+                        class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-xs font-bold">Cancel</button>
+                    <button type="button" onclick="confirmShareTConnection()"
+                        class="py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold">Yes,
+                        connect</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHARE T ACTIONS: IN-APP MODALS ONLY -->
+        <div id="shareTOptionsModal"
+            class="hidden fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-[80] flex items-center justify-center p-4"
+            role="dialog" aria-modal="true" aria-labelledby="shareT-options-title">
+            <div
+                class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 p-5 shadow-2xl border border-slate-100 dark:border-slate-700">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h3 id="shareT-options-title" class="font-black text-sm">Share T options</h3>
+                        <p id="shareT-options-subtitle" class="text-xs text-slate-500 mt-1"></p>
+                    </div><button type="button" onclick="closeShareTOptionsModal()"
+                        class="text-slate-400 text-2xl leading-none" aria-label="Close">&times;</button>
+                </div>
+                <div id="shareT-options-actions" class="space-y-2"></div>
+                <button type="button" onclick="closeShareTOptionsModal()"
+                    class="mt-3 w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-xs font-bold">Cancel</button>
+            </div>
+        </div>
+        <div id="shareTActionConfirmModal"
+            class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[90] flex items-center justify-center p-4"
+            role="dialog" aria-modal="true" aria-labelledby="shareT-action-confirm-title">
+            <div
+                class="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 p-5 shadow-2xl border border-slate-100 dark:border-slate-700">
+                <h3 id="shareT-action-confirm-title" class="font-black text-sm mb-2">Confirm action</h3>
+                <p id="shareT-action-confirm-text" class="text-xs leading-5 text-slate-600 dark:text-slate-300 mb-4">
+                </p>
+                <div id="shareT-report-reason-wrap" class="hidden mb-4"><label for="shareT-report-reason"
+                        class="block text-xs font-bold mb-1.5">Reason for report</label><textarea
+                        id="shareT-report-reason" rows="3"
+                        class="w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 p-3 text-xs outline-none focus:border-orange-500"
+                        placeholder="Tell us why you are reporting this Share T..."></textarea></div>
+                <div class="grid grid-cols-2 gap-2"><button type="button" onclick="cancelShareTActionConfirm()"
+                        class="py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-xs font-bold">Cancel</button><button
+                        type="button" id="shareT-action-confirm-yes" onclick="executeShareTConfirmedAction()"
+                        class="py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold">Continue</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ============================================== -->
         <!-- MODAL: SHARE T MEMBERS (ORODHA YA WASHIRIKI)   -->
         <!-- ============================================== -->
@@ -1127,6 +1206,33 @@
                         </div>
                     </div>
 
+                    <!-- SECTION 3: PRIVACY & SECURITY -->
+                    <div class="space-y-1.5">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">Privacy &amp;
+                            Security</div>
+                        <div
+                            class="bg-slate-50 dark:bg-slate-700/40 rounded-xl p-2.5 space-y-2 border border-slate-100 dark:border-slate-700">
+                            <div class="flex items-start gap-2">
+                                <i class="fa-solid fa-bookmark text-orange-600 mt-0.5"></i>
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-xs font-bold">Who can see my saved items?</div>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Keep saved posts
+                                        private from other people.</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" id="saved-visibility-nobody"
+                                    onclick="setSavedItemsVisibility('nobody')"
+                                    class="py-2 px-2 rounded-lg border text-[11px] font-bold">Nobody</button>
+                                <button type="button" id="saved-visibility-everyone"
+                                    onclick="setSavedItemsVisibility('everyone')"
+                                    class="py-2 px-2 rounded-lg border text-[11px] font-bold">Everyone</button>
+                            </div>
+                            <p id="saved-visibility-status" class="text-[10px] text-slate-500 dark:text-slate-400">Only
+                                you can see your saved items.</p>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="border-t border-slate-100 dark:border-slate-700 pt-3 mt-4">
@@ -1195,39 +1301,57 @@
 
         <!-- CREATE POST MODAL -->
         <div id="postModal"
-            class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center">
+            class="hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center"
+            onclick="if(event.target===this)closePostModal()">
             <div
-                class="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
-                    <h3 class="font-bold text-sm" data-i18n="createPostTitle">Create New Post</h3>
-                    <button onclick="closePostModal()"
-                        class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
-                </div>
-                <textarea id="new-post-content"
-                    class="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 rounded-xl p-3 text-sm outline-none"
-                    rows="3" placeholder="What's your story today?..."></textarea>
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 uppercase">Photo (Optional)</label>
-                    <div class="flex items-center gap-3 mt-2">
-                        <button type="button" onclick="document.getElementById('new-post-image').click()"
-                            class="w-12 h-12 rounded-2xl border-2 border-dashed border-orange-300 dark:border-orange-700 text-orange-600 flex items-center justify-center hover:bg-orange-50 dark:hover:bg-slate-700 transition"
-                            aria-label="Upload post photo" title="Add photo"><i
-                                class="fa-solid fa-plus text-lg"></i></button>
-                        <input id="new-post-image" type="file" accept="image/*" class="hidden"
-                            onchange="handlePostImageSelected(event)">
-                        <div id="new-post-image-preview"
-                            class="hidden w-16 h-16 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-                            <img id="new-post-image-preview-img" class="w-full h-full object-cover"
-                                alt="Selected post photo"></div>
-                        <span class="text-[11px] text-slate-400">Tap + to choose a photo from your device</span>
+                class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 w-full max-w-xl rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+                <div
+                    class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h3 class="font-extrabold text-base tracking-tight" data-i18n="createPostTitle">Create post</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Share a moment with your community</p>
                     </div>
+                    <button type="button" onclick="closePostModal()"
+                        class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500"
+                        aria-label="Close post composer"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button onclick="closePostModal()" class="px-4 py-2 text-xs font-semibold text-slate-500"
-                        data-i18n="cancelBtn">Cancel</button>
-                    <button onclick="submitNewPost()"
-                        class="px-5 py-2 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-md"
-                        data-i18n="postNowBtn">Post Now</button>
+                <div class="p-5 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-full overflow-hidden bg-orange-50 dark:bg-slate-800 flex items-center justify-center text-orange-600 font-bold shrink-0"
+                            id="post-composer-avatar">U</div>
+                        <div class="min-w-0">
+                            <div id="post-composer-name" class="font-bold text-sm truncate">Your profile</div>
+                            <div class="text-xs text-slate-500">Posting to All Posts · <i
+                                    class="fa-solid fa-earth-africa text-[10px]"></i> Everyone</div>
+                        </div>
+                    </div>
+                    <textarea id="new-post-content"
+                        class="w-full min-h-[150px] resize-y border-0 bg-slate-50 dark:bg-slate-800/80 rounded-2xl p-4 text-[15px] leading-relaxed outline-none focus:ring-2 focus:ring-orange-500/30 placeholder:text-slate-400"
+                        rows="5" maxlength="5000" placeholder="What would you like to share?..."></textarea>
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 p-3">
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <div>
+                                <div class="text-sm font-bold">Photos</div>
+                                <div class="text-xs text-slate-500">Add multiple photos · up to 10</div>
+                            </div><span id="new-post-image-count"
+                                class="text-xs font-semibold text-slate-500">0/10</span>
+                        </div>
+                        <input id="new-post-image" type="file" accept="image/*" multiple class="hidden"
+                            onchange="handlePostImageSelected(event)">
+                        <div id="new-post-image-preview-list" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+                        <button type="button" onclick="document.getElementById('new-post-image').click()"
+                            class="mt-2 w-full flex items-center justify-center gap-2 rounded-xl border border-dashed border-orange-300 dark:border-orange-700 px-4 py-3 text-sm font-bold text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-slate-800 transition"><i
+                                class="fa-regular fa-images text-base"></i> Add photos</button>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 pt-1"><span
+                            class="text-[11px] text-slate-400"><i class="fa-solid fa-image mr-1"></i> Photos only · No
+                            videos</span>
+                        <div class="flex gap-2"><button type="button" onclick="closePostModal()"
+                                class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                data-i18n="cancelBtn">Cancel</button><button type="button" onclick="submitNewPost()"
+                                class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold shadow-lg shadow-orange-600/20"><i
+                                    class="fa-solid fa-paper-plane mr-2"></i>Post</button></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1293,6 +1417,45 @@
         let activeViewOnceTarget = null;
         let activeCommentPostId = null;
         let replyingToCommentId = null;
+        const expandedReplyThreads = new Set();
+        const demoCommentAuthors = [
+            ['sarah_c', 'Sarah Connor'], ['kelvin_j', 'Kelvin Joseph'], ['neema_p', 'Neema Peter'],
+            ['asha_m', 'Asha Mushi'], ['brian_k', 'Brian Kato'], ['david_m', 'David Miller'],
+            ['joy_m', 'Joy Martin'], ['sam_k', 'Sam Kato'], ['lina_p', 'Lina Peter'],
+            ['musa_j', 'Musa Juma'], ['amina_s', 'Amina Said'], ['peter_n', 'Peter Noel'],
+            ['grace_w', 'Grace William'], ['john_b', 'John Baraka'], ['zawadi_m', 'Zawadi Mushi'],
+            ['faith_k', 'Faith Kelvin'], ['eric_d', 'Eric Daniel'], ['mary_a', 'Mary Asha'],
+            ['kelly_r', 'Kelly Rose'], ['abdul_h', 'Abdul Hassan'], ['rehema_j', 'Rehema John']
+        ];
+        function ensureDemoCommentThreads(post) {
+            if (!post || post.__demoCommentsSeeded) return;
+            if (!Array.isArray(post.comments)) post.comments = [];
+            const sampleComments = [
+                'Nice post, thanks for sharing!', 'I agree with this point.', 'This is really helpful.',
+                'Interesting perspective. What do others think?', 'I had a similar experience recently.',
+                'Good point — more people should talk about this.', 'Thanks for bringing this up.',
+                'I learned something new from this.', 'That makes a lot of sense.',
+                'Would love to hear more about this.', 'Absolutely, well said!',
+                'This deserves more discussion.'
+            ];
+            let nextId = Math.max(10000, ...post.comments.map(c => Number(c.id) || 0)) + 1;
+            while (post.comments.length < 11) {
+                const idx = post.comments.length;
+                const [username, realName] = demoCommentAuthors[idx % demoCommentAuthors.length];
+                post.comments.push({ id: nextId++, author: username, username, realName, text: sampleComments[idx % sampleComments.length], time: `${idx + 2}h ago`, likes: idx % 5, likedByCurrentUser: false, replies: [] });
+            }
+            let replyCount = post.comments.reduce((n, c) => n + (c.replies || []).length, 0);
+            let commentIndex = 0;
+            while (replyCount < 16) {
+                const parent = post.comments[commentIndex % post.comments.length];
+                if (!Array.isArray(parent.replies)) parent.replies = [];
+                const [username, realName] = demoCommentAuthors[(commentIndex + 5) % demoCommentAuthors.length];
+                parent.replies.push({ id: nextId++, author: username, username, realName, text: ['Thanks for replying!', 'That is a good way to look at it.', 'Exactly what I was thinking.', 'Appreciate your input.'][replyCount % 4], time: '1h ago', likes: replyCount % 3, likedByCurrentUser: false, replies: [] });
+                replyCount++;
+                commentIndex++;
+            }
+            post.__demoCommentsSeeded = true;
+        }
         let activeProfileSubTab = 'posts';
 
         // Post Options & Chat Target
@@ -1335,7 +1498,9 @@
         let connectedShareTIds = new Set();
         let pinnedShareTIds = new Set();
         let shareTMenuTopicId = null;
+        let pendingShareTConnectionId = null;
         let savedPostsSet = new Set();
+        let savedItemsVisibility = 'nobody';
 
         let notifications = [];
 
@@ -1878,6 +2043,7 @@
         function renderFeed() {
             const feed = document.getElementById('feed-tab');
             feed.innerHTML = "";
+            posts.forEach(ensureDemoCommentThreads);
 
             const visiblePosts = posts.filter(p =>
                 !blockedUsersSet.has(p.username) &&
@@ -1893,6 +2059,23 @@
             visiblePosts.forEach(post => {
                 feed.appendChild(createFeedPostCard(post));
             });
+        }
+
+        function renderPostImagesMarkup(post) {
+            const images = getPostGalleryImages(post);
+            const total = images.length;
+            if (!total) return '';
+            const tile = (index, extraClass = '') => `<button type="button" onclick="openPostGalleryViewer(${post.id}, ${index})" class="relative block min-w-0 overflow-hidden bg-slate-100 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 ${extraClass}" aria-label="Open photo ${index + 1}"><img src="${images[index]}" alt="Post photo ${index + 1}" class="w-full h-full object-cover ${total > 4 && index === 3 ? 'blur-sm scale-105' : ''}" loading="lazy">${total > 4 && index === 3 ? `<span class="absolute inset-0 flex items-center justify-center bg-black/35 text-white text-2xl sm:text-3xl font-extrabold">+${total - 4}</span>` : ''}</button>`;
+            if (total === 1) {
+                return `<div class="mb-2 overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900"><button type="button" onclick="openPostGalleryViewer(${post.id}, 0)" class="block w-full" aria-label="Open photo"><img src="${images[0]}" alt="Post photo" class="w-full max-h-[520px] object-contain cursor-zoom-in" loading="lazy"></button></div>`;
+            }
+            if (total === 2) {
+                return `<div class="mb-2 grid grid-cols-2 gap-1 overflow-hidden rounded-2xl aspect-[2/1]">${tile(0, 'h-full aspect-square')}${tile(1, 'h-full aspect-square')}</div>`;
+            }
+            if (total === 3) {
+                return `<div class="mb-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden rounded-2xl aspect-[4/3]">${tile(0, 'col-span-2 row-span-1 h-full min-h-0')}${tile(1, 'h-full min-h-0')}${tile(2, 'h-full min-h-0')}</div>`;
+            }
+            return `<div class="mb-2 grid grid-cols-2 grid-rows-2 gap-1 overflow-hidden rounded-2xl aspect-square">${tile(0, 'h-full min-h-0')}${tile(1, 'h-full min-h-0')}${tile(2, 'h-full min-h-0')}${tile(3, 'h-full min-h-0')}</div>`;
         }
 
         function createFeedPostCard(post) {
@@ -1922,7 +2105,7 @@
                 
                 <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed mb-2 break-words">${post.content}</p>
                 ${post.shareTTopicId ? `<button onclick="connectShareTFromPost(${post.shareTTopicId})" class="w-full mb-2 py-2 rounded-xl bg-orange-600 text-white text-xs font-bold"><i class="fa-solid fa-comments mr-1"></i> Connect to continue</button>` : ''}
-                ${post.image ? `<img src="${post.image}" onclick="openPostImageViewer(this.src)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPostImageViewer(this.src)}" title="Open image" class="w-full max-h-96 object-contain bg-slate-50 dark:bg-slate-900 rounded-xl mb-2 cursor-zoom-in">` : ''}
+                ${renderPostImagesMarkup(post)}
                 
                 <div class="flex justify-between items-center border-t border-slate-50 dark:border-slate-700 pt-2 text-slate-500 text-xs mt-2">
                     <div class="flex gap-3">
@@ -1949,10 +2132,8 @@
         function connectShareTFromPost(id) {
             const topic = shareTTopics.find(t => t.id === id);
             if (!topic) { showToast('This Share T is no longer available.'); return; }
-            if (!connectedShareTIds.has(id) && topic.creatorUsername !== currentUser.username) {
-                if (!confirm(`Connect to '${topic.title}' to continue?`)) return;
-                connectShareT(id);
-            } else openChatRoom(id);
+            if (!connectedShareTIds.has(id) && topic.creatorUsername !== currentUser.username) requestShareTConnection(id);
+            else openChatRoom(id);
         }
 
         // 3-Dots Modal Controls
@@ -2015,6 +2196,7 @@
         // ==============================================
         function openCommentsModal(postId) {
             activeCommentPostId = postId;
+            ensureDemoCommentThreads(posts.find(p => p.id === postId));
             replyingToCommentId = null;
             cancelReply();
             renderCommentsModal();
@@ -2063,7 +2245,7 @@
             const renderNode = (comment, depth = 0) => {
                 const node = document.createElement('div');
                 node.className = 'space-y-2 pb-2';
-                node.style.marginLeft = depth ? '18px' : '0';
+                node.style.marginLeft = '0';
                 const isMine = comment.author === currentUser.username;
                 const repliesCount = (comment.replies || []).length;
                 node.innerHTML = `
@@ -2086,7 +2268,7 @@
                 if (repliesCount) {
                     const children = document.createElement('div');
                     children.id = `replies-box-${comment.id}`;
-                    children.className = 'hidden mt-2 space-y-2 pl-2 border-l-2 border-orange-100 dark:border-slate-700';
+                    children.className = (expandedReplyThreads.has(comment.id) ? '' : 'hidden ') + 'mt-2 space-y-3 w-full min-w-0';
                     (comment.replies || []).forEach(reply => children.appendChild(renderNode(reply, depth + 1)));
                     node.appendChild(children);
                 }
@@ -2131,11 +2313,16 @@
 
         function toggleRepliesAccordion(commentId) {
             const box = document.getElementById(`replies-box-${commentId}`);
-            if (box) box.classList.toggle('hidden');
+            if (!box) return;
+            const willOpen = box.classList.contains('hidden');
+            box.classList.toggle('hidden', !willOpen);
+            if (willOpen) expandedReplyThreads.add(commentId);
+            else expandedReplyThreads.delete(commentId);
         }
 
         function setReplyingTarget(commentId, author) {
             replyingToCommentId = commentId;
+            expandedReplyThreads.add(commentId);
             const ind = document.getElementById('reply-indicator');
             document.getElementById('replying-to-username').innerText = `@${author}`;
             ind.classList.remove('hidden');
@@ -2232,6 +2419,34 @@
         function connectShareT(id) {
             const topic = shareTTopics.find(t => t.id === id);
             if (!topic) return;
+            if (connectedShareTIds.has(id) || topic.creatorUsername === currentUser.username) { openChatRoom(id); return; }
+            requestShareTConnection(id);
+        }
+
+        function requestShareTConnection(id) {
+            const topic = shareTTopics.find(t => t.id === id);
+            if (!topic) { showToast('This Share T is no longer available.'); return; }
+            if (connectedShareTIds.has(id) || topic.creatorUsername === currentUser.username) { openChatRoom(id); return; }
+            pendingShareTConnectionId = id;
+            const avatar = document.getElementById('shareT-connect-avatar');
+            avatar.innerHTML = topic.creatorAvatar ? `<img src="${topic.creatorAvatar}" alt="${topic.creatorRealName}" class="w-full h-full object-cover">` : (topic.creatorRealName || topic.creatorUsername || 'GS').charAt(0).toUpperCase();
+            document.getElementById('shareT-connect-title').textContent = 'Ready to connect to Share T?';
+            document.getElementById('shareT-connect-owner').textContent = `GS: ${topic.creatorRealName || topic.creatorUsername} (@${topic.creatorUsername})`;
+            document.getElementById('shareT-connect-room-name').textContent = topic.title;
+            document.getElementById('shareTConnectConfirmModal').classList.remove('hidden');
+        }
+
+        function cancelShareTConnection() {
+            document.getElementById('shareTConnectConfirmModal').classList.add('hidden');
+            pendingShareTConnectionId = null;
+        }
+
+        function confirmShareTConnection() {
+            const id = pendingShareTConnectionId;
+            document.getElementById('shareTConnectConfirmModal').classList.add('hidden');
+            pendingShareTConnectionId = null;
+            const topic = shareTTopics.find(t => t.id === id);
+            if (!topic) { showToast('This Share T is no longer available.'); return; }
             connectedShareTIds.add(id);
             if (!topic.members) topic.members = [];
             if (!topic.members.some(m => m.username === currentUser.username)) topic.members.push({ username: currentUser.username, realName: currentUser.realName, avatar: currentUser.avatar, gender: currentUser.gender });
@@ -2240,15 +2455,97 @@
             openChatRoom(id);
         }
 
+        let activeShareTOptionsId = null;
+        let pendingShareTAction = null;
+
+        function closeShareTOptionsModal() {
+            document.getElementById('shareTOptionsModal').classList.add('hidden');
+            activeShareTOptionsId = null;
+        }
+
         function openShareTOptions(id) {
-            const topic = shareTTopics.find(t => t.id === id); if (!topic) return;
+            const topic = shareTTopics.find(t => t.id === id);
+            if (!topic) return;
+            activeShareTOptionsId = id;
+            const isGS = topic.creatorUsername === currentUser.username;
             const pinned = pinnedShareTIds.has(id);
-            const action = prompt(`Share T: ${topic.title}\nType a number:\n1. ${pinned ? 'Unpin from top' : 'Pin top'}\n2. Delete / disconnect\n3. Report this Share T\n4. Block this Share T\n5. Share this Share T`);
-            if (action === '1') { if (pinned) pinnedShareTIds.delete(id); else pinnedShareTIds.add(id); renderShareTTopics(); showToast(pinned ? 'Unpinned from top.' : 'Pinned to top.'); }
-            else if (action === '2') { if (confirm('Disconnect and delete this Share T from My Share T?')) { connectedShareTIds.delete(id); if (topic.creatorUsername === currentUser.username) shareTTopics = shareTTopics.filter(t => t.id !== id); renderShareTTopics(); showToast('Share T disconnected/deleted from your list.'); } }
-            else if (action === '3') { const reason = prompt('Report this Share T. Reason:'); if (reason) showToast('Report submitted.'); }
-            else if (action === '4') { if (confirm('Block this Share T? It will be hidden from Find Share T.')) { blockedShareTIds.add(id); renderShareTTopics(); showToast('Share T blocked.'); } }
-            else if (action === '5') shareShareT(id);
+            document.getElementById('shareT-options-subtitle').textContent = topic.title;
+            const actions = document.getElementById('shareT-options-actions');
+            const button = (label, icon, action, danger = false) => `<button type="button" onclick="${action}" class="w-full flex items-center gap-3 p-3 rounded-xl border ${danger ? 'border-red-200 dark:border-red-900 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30' : 'border-slate-200 dark:border-slate-700 hover:bg-orange-50 dark:hover:bg-slate-700'} text-left text-xs font-bold"><i class="fa-solid ${icon} w-4 text-center"></i><span>${label}</span></button>`;
+            let html = button(pinned ? 'Unpin from top' : 'Pin to top', 'fa-thumbtack', `toggleShareTPin(${id})`);
+            if (isGS) {
+                html += button('Delete Share T for everyone', 'fa-trash-can', `askShareTAction(${id}, 'delete')`, true);
+                html += `<p class="text-[10px] text-slate-500 px-1">As GS, you can delete your room for everyone. You cannot block your own Share T.</p>`;
+            } else {
+                html += button('Disconnect from My Share T', 'fa-right-from-bracket', `askShareTAction(${id}, 'disconnect')`);
+                html += button('Report this Share T', 'fa-flag', `askShareTAction(${id}, 'report')`, true);
+                html += button('Block this Share T', 'fa-ban', `askShareTAction(${id}, 'block')`, true);
+            }
+            html += button('Share to All Posts', 'fa-share-nodes', `shareShareTAndClose(${id})`);
+            actions.innerHTML = html;
+            document.getElementById('shareTOptionsModal').classList.remove('hidden');
+        }
+
+        function toggleShareTPin(id) {
+            const pinned = pinnedShareTIds.has(id);
+            if (pinned) pinnedShareTIds.delete(id); else pinnedShareTIds.add(id);
+            closeShareTOptionsModal(); renderShareTTopics(); showToast(pinned ? 'Unpinned from top.' : 'Pinned to top.');
+        }
+
+        function shareShareTAndClose(id) { closeShareTOptionsModal(); shareShareT(id); }
+
+        function askShareTAction(id, action) {
+            const topic = shareTTopics.find(t => t.id === id);
+            if (!topic) return;
+            const isGS = topic.creatorUsername === currentUser.username;
+            if (action === 'block' && isGS) { showToast('GS cannot block their own Share T.'); return; }
+            if (action === 'delete' && !isGS) { showToast('Only the GS can delete this Share T for everyone.'); return; }
+            if (action === 'report' && isGS) { showToast('You cannot report your own Share T.'); return; }
+            pendingShareTAction = { id, action };
+            document.getElementById('shareTOptionsModal').classList.add('hidden');
+            const title = document.getElementById('shareT-action-confirm-title');
+            const text = document.getElementById('shareT-action-confirm-text');
+            const reasonWrap = document.getElementById('shareT-report-reason-wrap');
+            const yes = document.getElementById('shareT-action-confirm-yes');
+            reasonWrap.classList.toggle('hidden', action !== 'report');
+            document.getElementById('shareT-report-reason').value = '';
+            if (action === 'delete') { title.textContent = 'Delete Share T for everyone?'; text.textContent = `“${topic.title}” and its room access will be removed for all members. This cannot be undone.`; yes.textContent = 'Delete for everyone'; yes.className = 'py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold'; }
+            else if (action === 'disconnect') { title.textContent = 'Disconnect Share T?'; text.textContent = `Remove “${topic.title}” from your My Share T list?`; yes.textContent = 'Disconnect'; yes.className = 'py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold'; }
+            else if (action === 'block') { title.textContent = 'Block this Share T?'; text.textContent = `“${topic.title}” will be hidden from Find Share T for you.`; yes.textContent = 'Block'; yes.className = 'py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold'; }
+            else { title.textContent = 'Report this Share T'; text.textContent = `Tell us why “${topic.title}” should be reviewed.`; yes.textContent = 'Submit report'; yes.className = 'py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold'; }
+            document.getElementById('shareTActionConfirmModal').classList.remove('hidden');
+        }
+
+        function cancelShareTActionConfirm() {
+            document.getElementById('shareTActionConfirmModal').classList.add('hidden');
+            pendingShareTAction = null;
+        }
+
+        function executeShareTConfirmedAction() {
+            if (!pendingShareTAction) return;
+            const { id, action } = pendingShareTAction;
+            const topic = shareTTopics.find(t => t.id === id);
+            if (!topic) { cancelShareTActionConfirm(); renderShareTTopics(); return; }
+            const isGS = topic.creatorUsername === currentUser.username;
+            if (action === 'delete') {
+                if (!isGS) { showToast('Only the GS can delete this Share T for everyone.'); cancelShareTActionConfirm(); return; }
+                shareTTopics = shareTTopics.filter(t => t.id !== id);
+                connectedShareTIds.delete(id); blockedShareTIds.delete(id); pinnedShareTIds.delete(id);
+                if (currentActiveTopic && currentActiveTopic.id === id) closeChatRoom();
+                renderShareTTopics(); showToast('Share T deleted for everyone.');
+            } else if (action === 'disconnect') {
+                connectedShareTIds.delete(id);
+                if (topic.members) topic.members = topic.members.filter(m => m.username !== currentUser.username);
+                renderShareTTopics(); showToast('Share T disconnected from your list.');
+            } else if (action === 'block') {
+                if (isGS) { showToast('GS cannot block their own Share T.'); cancelShareTActionConfirm(); return; }
+                blockedShareTIds.add(id); connectedShareTIds.delete(id); renderShareTTopics(); showToast('Share T blocked.');
+            } else if (action === 'report') {
+                const reason = document.getElementById('shareT-report-reason').value.trim();
+                if (!reason) { document.getElementById('shareT-report-reason').focus(); showToast('Please enter a reason for the report.'); return; }
+                showToast('Report submitted for review.');
+            }
+            cancelShareTActionConfirm();
         }
 
         let blockedShareTIds = new Set();
@@ -2849,7 +3146,7 @@
 
             const userPosts = posts.filter(p => p.username === username);
             document.getElementById('prof-count-posts').innerText = userPosts.length;
-            document.getElementById('prof-count-photos').innerText = userPosts.filter(p => p.image && p.image.trim() !== "").length;
+            document.getElementById('prof-count-photos').innerText = userPosts.reduce((sum, p) => sum + getPostGalleryImages(p).length, 0);
             document.getElementById('prof-count-saved').innerText = savedPostsSet.size;
             document.getElementById('saved-tab-count').innerText = savedPostsSet.size;
 
@@ -2906,7 +3203,7 @@
                             <button onclick="openCommentsModal(${post.id})" class="flex items-center gap-1 hover:text-orange-600"><i class="fa-regular fa-comment"></i> ${countCommentTree(post.comments || [])}</button>
                             <span class="flex items-center gap-1" title="Views"><i class="fa-regular fa-eye"></i> ${post.views || 0}</span>
                         </div>
-                        ${post.image ? `<img src="${post.image}" onclick="openPostImageViewer(this.src)" role="button" tabindex="0" title="Open image" class="w-full max-h-96 object-contain bg-slate-50 dark:bg-slate-900 rounded-xl mb-2 cursor-zoom-in">` : ''}
+                        ${renderPostImagesMarkup(post)}
                     `;
                     container.appendChild(card);
                 });
@@ -3140,7 +3437,27 @@
 
         function openSideMenu() {
             updateMenuCounters();
+            updateSavedItemsVisibilityUI();
             document.getElementById('sideMenuDrawer').classList.remove('hidden');
+        }
+
+        function setSavedItemsVisibility(value) {
+            if (value !== 'nobody' && value !== 'everyone') return;
+            savedItemsVisibility = value;
+            updateSavedItemsVisibilityUI();
+            showToast(value === 'nobody' ? 'Saved items are private.' : 'Saved items visibility set to everyone.');
+        }
+
+        function updateSavedItemsVisibilityUI() {
+            const nobody = document.getElementById('saved-visibility-nobody');
+            const everyone = document.getElementById('saved-visibility-everyone');
+            const status = document.getElementById('saved-visibility-status');
+            if (!nobody || !everyone || !status) return;
+            const active = 'border-orange-600 bg-orange-50 dark:bg-orange-950/40 text-orange-600';
+            const inactive = 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300';
+            nobody.className = 'py-2 px-2 rounded-lg border text-[11px] font-bold ' + (savedItemsVisibility === 'nobody' ? active : inactive);
+            everyone.className = 'py-2 px-2 rounded-lg border text-[11px] font-bold ' + (savedItemsVisibility === 'everyone' ? active : inactive);
+            status.textContent = savedItemsVisibility === 'nobody' ? 'Only you can see your saved items.' : 'Your saved items can be seen by everyone.';
         }
         function closeSideMenu() { document.getElementById('sideMenuDrawer').classList.add('hidden'); }
 
@@ -3233,6 +3550,9 @@
         function closePostModal() { document.getElementById('postModal').classList.add('hidden'); }
 
         let newPostImageData = "";
+        let newPostImagesData = [];
+        let postViewerImages = [];
+        let postViewerIndex = 0;
         let newTopicImageData = "";
         let chatSelectedMediaData = "";
         let chatSelectedMediaItems = [];
@@ -3253,15 +3573,47 @@
             reader.readAsDataURL(file);
         }
 
-        function handlePostImageSelected(event) {
-            const file = event.target.files && event.target.files[0];
-            if (file && !file.type.startsWith('image/')) { showToast("Choose an image file for your post."); event.target.value = ''; return; }
-            readSelectedMedia(file, (data) => {
-                newPostImageData = data;
-                document.getElementById('new-post-image-preview-img').src = data;
-                document.getElementById('new-post-image-preview').classList.remove('hidden');
-            });
+        async function handlePostImageSelected(event) {
+            const files = Array.from(event.target.files || []);
             event.target.value = '';
+            if (!files.length) return;
+            const invalid = files.find(file => !file.type.startsWith('image/'));
+            if (invalid) { showToast("Only image photos are allowed in posts. Videos are not supported."); return; }
+            const remaining = Math.max(0, 10 - newPostImagesData.length);
+            if (!remaining) { showToast("You can add up to 10 photos to one post."); return; }
+            const chosen = files.slice(0, remaining);
+            if (files.length > remaining) showToast(`Only ${remaining} more photo${remaining === 1 ? '' : 's'} can be added.`);
+            try {
+                const loaded = await Promise.all(chosen.map(file => new Promise((resolve, reject) => {
+                    if (file.size > 12 * 1024 * 1024) { reject(new Error(`${file.name} is larger than 12 MB.`)); return; }
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(String(reader.result || ''));
+                    reader.onerror = () => reject(new Error(`Could not read ${file.name}.`));
+                    reader.readAsDataURL(file);
+                })));
+                newPostImagesData = [...newPostImagesData, ...loaded];
+                newPostImageData = newPostImagesData[0] || '';
+                renderNewPostImagePreviews();
+            } catch (error) { showToast(error.message || "Could not load the selected photos."); }
+        }
+
+        function renderNewPostImagePreviews() {
+            const list = document.getElementById('new-post-image-preview-list');
+            const count = document.getElementById('new-post-image-count');
+            if (!list || !count) return;
+            count.textContent = `${newPostImagesData.length}/10`;
+            list.innerHTML = newPostImagesData.map((src, index) => `
+                <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                    <img src="${src}" alt="Selected photo ${index + 1}" class="w-full h-full object-cover">
+                    <span class="absolute bottom-1 left-1 rounded-md bg-black/60 text-white text-[10px] px-1.5 py-0.5">${index + 1}</span>
+                    <button type="button" onclick="removeNewPostImage(${index})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/65 text-white text-xs" aria-label="Remove photo ${index + 1}"><i class="fa-solid fa-xmark"></i></button>
+                </div>`).join('');
+        }
+
+        function removeNewPostImage(index) {
+            newPostImagesData.splice(index, 1);
+            newPostImageData = newPostImagesData[0] || '';
+            renderNewPostImagePreviews();
         }
 
         function handleTopicImageSelected(event) {
@@ -3363,19 +3715,62 @@
             renderChatSelectedMediaPreview();
         }
 
-        function openPostImageViewer(src) {
-            if (!src) return;
+        function getPostGalleryImages(post) {
+            if (!post) return [];
+            if (Array.isArray(post.images) && post.images.length) return post.images;
+            return post.image ? [post.image] : [];
+        }
+
+        function openPostGalleryViewer(postId, index = 0) {
+            const post = posts.find(item => Number(item.id) === Number(postId));
+            const images = getPostGalleryImages(post);
+            if (!images.length) return;
+            postViewerImages = images;
+            postViewerIndex = Math.max(0, Math.min(index, images.length - 1));
+            renderPostViewerImage();
             const viewer = document.getElementById('postImageViewer');
-            const image = document.getElementById('post-image-viewer-img');
-            const download = document.getElementById('post-image-download');
-            image.src = src;
-            download.href = src;
-            download.download = `HeyTanz-image-${Date.now()}.jpg`;
             viewer.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
-        document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closePostImageViewer(); });
+        function openPostImageViewer(src) {
+            if (!src) return;
+            postViewerImages = [src];
+            postViewerIndex = 0;
+            renderPostViewerImage();
+            document.getElementById('postImageViewer').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderPostViewerImage() {
+            const src = postViewerImages[postViewerIndex];
+            const image = document.getElementById('post-image-viewer-img');
+            const download = document.getElementById('post-image-download');
+            image.src = src;
+            download.href = src;
+            download.download = `HeyTanz-image-${postViewerIndex + 1}-${Date.now()}.jpg`;
+            const count = document.getElementById('post-image-viewer-count');
+            if (count) count.textContent = postViewerImages.length > 1 ? `${postViewerIndex + 1} of ${postViewerImages.length}` : 'Photo';
+            const prev = document.getElementById('post-image-prev');
+            const next = document.getElementById('post-image-next');
+            prev.classList.toggle('hidden', postViewerImages.length < 2);
+            next.classList.toggle('hidden', postViewerImages.length < 2);
+        }
+
+        function changePostViewerImage(direction) {
+            if (postViewerImages.length < 2) return;
+            postViewerIndex = (postViewerIndex + direction + postViewerImages.length) % postViewerImages.length;
+            renderPostViewerImage();
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closePostImageViewer();
+            const viewer = document.getElementById('postImageViewer');
+            if (viewer && !viewer.classList.contains('hidden')) {
+                if (event.key === 'ArrowLeft') changePostViewerImage(-1);
+                if (event.key === 'ArrowRight') changePostViewerImage(1);
+            }
+        });
 
         function closePostImageViewer() {
             const viewer = document.getElementById('postImageViewer');
@@ -3383,10 +3778,29 @@
             document.body.style.overflow = '';
         }
 
+        function resetPostComposer() {
+            document.getElementById('new-post-content').value = '';
+            newPostImageData = '';
+            newPostImagesData = [];
+            renderNewPostImagePreviews();
+        }
+
+        function openPostModal() {
+            const modal = document.getElementById('postModal');
+            if (modal) modal.classList.remove('hidden');
+            const avatar = document.getElementById('post-composer-avatar');
+            const name = document.getElementById('post-composer-name');
+            if (name) name.textContent = currentUser.realName || 'Your profile';
+            if (avatar) {
+                avatar.innerHTML = currentUser.avatar ? `<img src="${currentUser.avatar}" alt="Profile" class="w-full h-full object-cover">` : (currentUser.username || 'U').charAt(0).toUpperCase();
+            }
+        }
+        function closePostModal() { document.getElementById('postModal').classList.add('hidden'); }
 
         function submitNewPost() {
             const content = document.getElementById('new-post-content').value.trim();
-            if (!content) return;
+            const images = [...newPostImagesData];
+            if (!content && !images.length) { showToast('Add some text or at least one photo to post.'); return; }
 
             posts.unshift({
                 id: Date.now(),
@@ -3395,7 +3809,8 @@
                 avatar: currentUser.avatar,
                 gender: currentUser.gender,
                 content: content,
-                image: newPostImageData,
+                image: images[0] || '',
+                images: images,
                 likes: 0,
                 likedByCurrentUser: false,
                 time: "Just now",
@@ -3403,10 +3818,7 @@
             });
 
             renderFeed();
-            document.getElementById('new-post-content').value = "";
-            newPostImageData = "";
-            document.getElementById('new-post-image-preview').classList.add('hidden');
-            document.getElementById('new-post-image-preview-img').src = '';
+            resetPostComposer();
             closePostModal();
             showToast("Post published!");
         }
