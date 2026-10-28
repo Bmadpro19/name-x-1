@@ -783,12 +783,16 @@
                     </div>
                 </div>
 
-                <!-- TABS: POSTS vs SAVED -->
+                <!-- PROFILE TABS: POSTS / PHOTOS / SAVED -->
                 <div class="border-b border-slate-200 dark:border-slate-800 flex text-xs font-bold text-slate-500">
                     <button onclick="setProfileSubTab('posts')" id="btn-prof-tab-posts"
                         class="flex-1 py-2 text-center text-orange-600 border-b-2 border-orange-600 flex items-center justify-center gap-1.5 transition">
                         <i class="fa-solid fa-table-cells"></i> <span id="prof-posts-tab-label"
                             data-i18n="tabPosts">Posts</span>
+                    </button>
+                    <button onclick="setProfileSubTab('photos')" id="btn-prof-tab-photos"
+                        class="flex-1 py-2 text-center hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-image"></i> <span>Photos</span>
                     </button>
                     <button onclick="setProfileSubTab('saved')" id="btn-prof-tab-saved"
                         class="flex-1 py-2 text-center hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center gap-1.5 transition">
@@ -3155,17 +3159,17 @@
 
         function setProfileSubTab(subTab) {
             activeProfileSubTab = subTab;
-            const btnPosts = document.getElementById('btn-prof-tab-posts');
-            const btnSaved = document.getElementById('btn-prof-tab-saved');
-
-            if (subTab === 'posts') {
-                btnPosts.className = "flex-1 py-2 text-center text-orange-600 border-b-2 border-orange-600 flex items-center justify-center gap-1.5 transition";
-                btnSaved.className = "flex-1 py-2 text-center hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center gap-1.5 transition";
-            } else {
-                btnSaved.className = "flex-1 py-2 text-center text-orange-600 border-b-2 border-orange-600 flex items-center justify-center gap-1.5 transition";
-                btnPosts.className = "flex-1 py-2 text-center hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center gap-1.5 transition";
-            }
-
+            const tabIds = {
+                posts: document.getElementById('btn-prof-tab-posts'),
+                photos: document.getElementById('btn-prof-tab-photos'),
+                saved: document.getElementById('btn-prof-tab-saved')
+            };
+            Object.entries(tabIds).forEach(([key, button]) => {
+                if (!button) return;
+                button.className = key === subTab
+                    ? "flex-1 py-2 text-center text-orange-600 border-b-2 border-orange-600 flex items-center justify-center gap-1.5 transition"
+                    : "flex-1 py-2 text-center hover:text-slate-700 dark:hover:text-slate-300 flex items-center justify-center gap-1.5 transition";
+            });
             renderProfilePostsList();
         }
 
@@ -3173,10 +3177,11 @@
             posts.forEach(p => { if (typeof p.views !== 'number') p.views = 0; });
             const container = document.getElementById('profile-posts-container');
             container.innerHTML = "";
+            container.className = "space-y-3 pt-1";
             const isMe = (currentViewingUser.username === currentUser.username);
+            const userPosts = posts.filter(p => p.username === currentViewingUser.username);
 
             if (activeProfileSubTab === 'posts') {
-                const userPosts = posts.filter(p => p.username === currentViewingUser.username);
                 userPosts.forEach(post => {
                     if (!Array.isArray(post.viewedBy)) post.viewedBy = [];
                     if (currentUser.username !== post.username && !post.viewedBy.includes(currentUser.username)) {
@@ -3207,7 +3212,29 @@
                     `;
                     container.appendChild(card);
                 });
+            } else if (activeProfileSubTab === 'photos') {
+                const photoItems = [];
+                userPosts.forEach(post => {
+                    getPostGalleryImages(post).forEach((src, index) => {
+                        if (src) photoItems.push({ postId: post.id, index, src });
+                    });
+                });
+                if (!photoItems.length) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-10">No photos yet.</p>`;
+                    return;
+                }
+                container.className = "grid grid-cols-3 gap-1 pt-1";
+                photoItems.forEach(photo => {
+                    const tile = document.createElement('button');
+                    tile.type = 'button';
+                    tile.className = "relative aspect-square min-w-0 overflow-hidden bg-slate-100 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500";
+                    tile.setAttribute('aria-label', 'Open photo');
+                    tile.innerHTML = `<img src="${photo.src}" alt="Posted photo" loading="lazy" class="w-full h-full object-cover">`;
+                    tile.onclick = () => openPostGalleryViewer(photo.postId, photo.index);
+                    container.appendChild(tile);
+                });
             } else if (activeProfileSubTab === 'saved') {
+                container.className = "space-y-3 pt-1";
                 const savedList = posts.filter(p => savedPostsSet.has(p.id));
                 if (savedList.length === 0) {
                     container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-6">${t('noSavedYet')}</p>`;
